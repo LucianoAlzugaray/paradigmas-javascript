@@ -52,3 +52,6 @@ La siguiente lista son las lecturas utilizadas para el informe.
 - https://github.com/denysdovhan/wtfjs
 - https://github.com/getify/You-Dont-Know-JS
 - https://developer.mozilla.org/es/docs/Web/JavaScript/Introducci%C3%B3n_a_JavaScript_orientado_a_objetos
+- https://www.scribd.com/document/366609333/Analisis-Sintactico-del-lenguaje-JavaScript-utilizando-teoria-de-automatas
+
+- https://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
