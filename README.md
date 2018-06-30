@@ -30,19 +30,19 @@ La programación basada en prototipos consiste en
 ## Criterios de Evaluación
 
 ## Tipado
-
+Lucas
 ## Expresiones
-
+Luciano
 ## Tipos de Datos
-
+Lucas
 ## Estructuras de control
-
+Luciano
 ## Pasaje de Parámetros
-
+Lucas
 ## Excepciones
-
+Luciano
 ## Concurrencia  
-
+Lucas
 
 ## Referencias
 La siguiente lista son las lecturas utilizadas para el informe.
