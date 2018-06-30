@@ -55,3 +55,4 @@ La siguiente lista son las lecturas utilizadas para el informe.
 - https://www.scribd.com/document/366609333/Analisis-Sintactico-del-lenguaje-JavaScript-utilizando-teoria-de-automatas
 
 - https://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+- http://tomcopeland.blogs.com/EcmaScript.html#prod88
