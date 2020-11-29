@@ -331,7 +331,7 @@ console.log(foo);
 
 
 ## Excepciones
-
+ 
 Javascript tiene un sistema de manejo de excepciones con sus peculiaridades especificas. Primero, puedes lanzar excepciones utilizando  la instrucción *throw*. Las excepciones lanzadas escalaran bloque tras bloque hasta encontrar el primer manejador de excepciones. El mismo tiene la estructura
 
 ```javascript
