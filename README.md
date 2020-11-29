@@ -1,4 +1,4 @@
-# Trabajo de Investigación - Javascript
+# Trabajo de Investigación - JavaScript
 
 **Profesores**
 -	Lic. Romina Stickar
@@ -10,22 +10,114 @@
 
 
 ## Introducción
-Este documento es el resultado de una investigación propuesta por la materia *Paradigmas y Lenguajes de Programación* sobre un lenguaje de programación y sus caracteristicas. 
+Este documento es el resultado de una investigación propuesta por la cátedra *Paradigmas y Lenguajes de Programación* sobre un lenguaje de programación y sus caracteristicas. 
 
-El objetivo de este trabajo es elegir un lenguaje, en este caso *Javascript*, investigar algunos aspectos estudiados en la cátedra sobre el mismo, y desarrollar un informe.
+El objetivo de este trabajo es elegir un lenguaje, en este caso *JavaScript*, investigar algunos aspectos estudiados en la cátedra sobre el mismo, y desarrollar un informe.
 
-## Historia del Lenguaje
+## Breve historia del lenguaje
+JavaScript surgió como un lenguaje enteramente destinado a la web. A mediados de los '90 comenzaban a desarrollarse las primeras aplicaciones web con la incorporación de formularios relativamente complejos. 
 
+Sin embargo la velocidad promedio de los modems con los que se conectaban los usuarios, no superaba los 28.8 kbps. Por ello las compañías proveedoras de navegadores, comenzaron a trabajar sobre alternativas basadas en la ejecución de código en el navegador. 
 
-## Aspectos Específicos de *Javascript*
+Así fue como Netscape, de la mano de Brendan Eich, incluyó la primera versión el intérprete de LiveScript, luego rebautizado por Sun Microsystems como JavaScript. 
+
+Poco tiempo después Microsoft lanzó Internet Explorer 3 que incluía un intérprete de JScript, que fue considerado una copia de JavaScript por buena parte de la industria. Debido a ello, en búsqueda de la estandarización del lenguaje, NetScape envió las especificaciones de JavScript 1.1 a la European Computer Manufacturers Association (ECMA). La ECMA creó el comité TC39 con el objetivo de "estandarizar de un lenguaje de script multiplataforma e independiente de cualquier empresa". 
+
+Poco tiempo después vió la luz el primer estándar internacional de JavaScript, el ECMA-262, que fue incorporado por la ISO en la norma ISO/IEC-16262. 
+
+Hoy, a 25 años de su surgimiento, JavaScript se ha convertido en un lenguaje de programación multipropósito. No solo ha crecido exponencialmente su potencia del lado del navegador, sino que ha migrado al servidor constituyendo una solución interesante para aplicaciones de entrada/salida intensivas gracias a las bondades del event loop. Además desde hace varios años es fuertemente utilizado para la construcción de aplicaciones móviles híbridas e incluso aplicaciones desktop de la mano de frameworks como ElectronJs entre otros.     
+ 
 
 ## Paradigma
 
-*Javascript* pertenece escencialmente a la clasificación de los **Lenguajes Procedurales**. Esto significa que un programa escrito en *Javascript*  es una sucesión de instrucciones, que se ejecutan secuencialmente, para indicarle al sistema como computar las acciones correspondientes.
+Javascript es un lenguaje multiparadigma. Admite tanto la implementación de programas basados en el paradigma Orientado a Objetos como en el paradigma Funcional. Sin embargo no es posible hablar de una implementación pura de ninguno de ellos. 
 
-Al mismo tiempo, la comunidad de *Javascript* agregan dos paradigmas más que este lenguaje cumple con ciertas características. Primero, al lenguaje se lo puede encontrar categorizado como **orientado a objetos** . Esto ocurre porque el lenguaje ofrece mecanismos para generar abstracciones parecidas a las clases, las cuales denominan **prototipos**, así  llevando una **programación basada en prototipos**.
+Si bien es cierto que JavaScript puede utilizarse como lenguaje procedural y de scripting, creemos que son el paradigma Funcional y el Orientado a Objetos los que se destacan en el diseño actual del lenguaje y por lo tanto los que más vale la pena analizar en este breve trabajo.
+De hecho los frameworks más populares para la construcción de aplicaciones frontend en JavaScript, Angular y React, han sido desarrollados precisamente en base a los paradigmas Orientado a Objetos y Funcional respectivamente.   
 
-La programación basada en prototipos consiste en 
+En los próximos apartados analizaremos cada uno de estos paradigmas en JavaScript, poniendo énfasis en ejemplificar su implementación por un lado y mencionar los aspectos que lo alejan de las implementaciones puras por otro.
+
+### Paradigma Funcional
+Un ejemplo simple. Construcción de la función intersección procedural y funcionalmente.
+
+**Procedural**
+```javascript
+function interseccionProcedural(a, b) {
+    var result = [];
+
+    for (var i = 0; i < a.length; i++) {
+        for (var j = 0; j < b.length; j++) {
+            if (a[i] === b[j]) {
+                result.push(a[i]);
+                break;
+            }
+        }
+    }
+    return result;
+}
+```
+
+**Funcional**
+```javascript
+const interseccionFuncional = (a, b) => a.filter(value => b.indexOf(value) > -1);
+``` 
+
+Entre las características sobresalientes de los lenguajes funcionales puros podemos mencionar las siguientes:
+* Semántica de valores
+* Transparencia referencial
+* Funciones como valores de primera clase
+* Currying
+* Evaluación perezosa
+
+Analicemos punto por punto:
+
+#### Semántica de valores
+Como veremos en apartados posteriores, JavaScript no solo soporta asignación de variables sino que además delega en el programador el cuidado de efectos colaterales derivados de la cuestión del *scope* como se verá mas adelante.
+En este sentido se aparta notablemente de lenguajes funcionales puros. 
+
+Sin embargo también es cierto que desde hace varios años tanto desde quienes mantienen el lenguaje en sí como desde la comunidad, vienen creciendo herramientas, prácticas y patrones para favorecer la inmutabilidad. Como referencia podemos mencionar al popular patrón Redux y a la incorporación de la sintaxis de des estructuración de objetos, que resulta central para lograr inmutabilidad y semántica de valores en la composición de funciones. 
+
+#### Transparencia Referencial
+
+#### Composición de funciones
+Una función de orden superior no es más que cualquier función que cumpla por lo menos una de las siguientes condiciones:
+* Recibe una función como argumento
+* Retorna una función
+     
+#### Currying
+Para concluir, no podemos dejar de mencionar currying, que consiste en reemplazar una función que toma varios argumentos con una secuencia de funciones, cada una con un solo argumento. Podríamos decir que el currying es un caso de aplicación parcial en el que siempre rompemos todos los argumentos en una cadena de invocaciones, uno por uno, mientras que en la aplicación parcial normalmente solo fijamos el primer argumento, o un número fijo. Se trata de mecanismos similares pero sutilmente distintos.
+
+
+### Paradigma Orientado a Objetos
+#### Requerimientos mínimos
+* Oscurecimiento de la información
+* Abstracción de datos
+* Clasificación (Herencia - Relación)
+* Polimorfismo y Vinculación Dinámica.
+
+#### Oscurecimiento de la información
+* El estado interno de un objeto solo puede ser accedido y modificado como
+respuesta a un mensaje.
+
+* La representación física de cada clase y la implementación de las operaciones,
+no es visible desde el exterior y por lo tanto puede ser modificada sin alterar el
+resto de las clases.
+
+#### Abstracción de datos
+* Una clase define un patrón de comportamiento a partir del cual es posible
+crear varias instancias
+
+#### Clasificacion - herencia
+
+
+new vs Object.create
+Object.create crea un nuevo objeto vacío y además le asigna a este el prototipo que nosotros querramos, si le pasamos un argumento, sino le asigna Object como prototipo
+new en cambio, es una llamada a una función constructora (ó Factory Function), la cual también puede recibir argumentos, pero en este caso son para setear otras propiedades del objeto y no su prototipo
+En este caso, el prototipo del nuevo objeto se obtiene a partir de la propiedad prototipe (objeto) de la función, a la cual se setea una referencia en la propiedad __proto__ del nuevo objeto
+Por último, con Object.create podemos crear un objeto que no herede de nadie (no tenga prototipo), usando Object.create(null); mientras que, si seteamos SomeConstructor.prototype = null, el nuevo objeto va a heredar de Object.prototype
+
+#### Polimorfismo
+
 
 ## Criterios de Evaluación
 
@@ -163,10 +255,9 @@ Luciano
 Lucas
 ## Estructuras de control
 Luciano
+## Polimorfismo
+
 ## Pasaje de Parámetros
-
-
-
 Otro de los problemas del scope en JavaScript es que todas las variables de los padres estáticos son visibles en sus hijos. 
 
 Para evitar esto e incorporar al scope de una unidad solo aquello que realmente se necesita se utilizan las *funciones anónimas autoejecutables*. 
@@ -283,7 +374,7 @@ Para atrapar un error de alguno de los tipos especificos, podemos basarnos en la
 
 try {
     //the following function may fail.
-    customFunctionThatCanFails()
+    funcionQuePuedeFallar()
 } catch (e){
   if (e instanceof EvalError) {
     console.error(e.name + ': ' + e.message)
@@ -346,13 +437,18 @@ En algunos ambientes, tales como nodejs version 10 en forma experimental a versi
 
 ## Referencias
 La siguiente lista son las lecturas utilizadas para el informe.
+- https://medium.com/laboratoria-developers/introducci%C3%B3n-a-la-programaci%C3%B3n-funcional-en-javascript-parte-1-e0b1d0b2142e
+- https://medium.com/laboratoria-developers/introducci%C3%B3n-a-la-programaci%C3%B3n-funcional-en-javascript-parte-2-funciones-puras-b99e08c2895d
+- https://medium.com/laboratoria-developers/introducci%C3%B3n-a-la-programaci%C3%B3n-funcional-en-javascript-parte-3-composici%C3%B3n-f82ac871dcfb
 - https://es.wikipedia.org/wiki/JavaScript
--  https://www.w3schools.com/js/js_object_prototypes.asp
+- https://uniwebsidad.com/libros/javascript/capitulo-1/breve-historia
+- https://www.w3schools.com/js/js_object_prototypes.asp
 - https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Classes
 - https://github.com/denysdovhan/wtfjs
 - https://github.com/getify/You-Dont-Know-JS
 - https://developer.mozilla.org/es/docs/Web/JavaScript/Introducci%C3%B3n_a_JavaScript_orientado_a_objetos
 - https://www.scribd.com/document/366609333/Analisis-Sintactico-del-lenguaje-JavaScript-utilizando-teoria-de-automatas
-
 - https://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
 - http://tomcopeland.blogs.com/EcmaScript.html#prod88
+- https://github.com/undefinedschool/notes-oop-js
+- https://developer.mozilla.org/es/docs/Web/JavaScript/Introducci%C3%B3n_a_JavaScript_orientado_a_objetos

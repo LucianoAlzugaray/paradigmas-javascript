@@ -1,0 +1,29 @@
+{
+  "name": "paradigmas-javascript",
+  "version": "1.0.0",
+  "description": "Trabajo Final de la materia Paradigmas y Lenguajes de Programación",
+  "main": "index.js",
+  "dependencies": {
+    "@jest/globals": "^26.6.2",
+    "jest": "^26.6.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucianoAlzugaray/paradigmas-javascript.git"
+  },
+  "keywords": [
+    "javascript",
+    "analisis",
+    "lenguaje"
+  ],
+  "author": "Lucas Krmpotic",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LucianoAlzugaray/paradigmas-javascript/issues"
+  },
+  "homepage": "https://github.com/LucianoAlzugaray/paradigmas-javascript#readme"
+}
