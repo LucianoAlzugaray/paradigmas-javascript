@@ -398,7 +398,7 @@ Javascript respeta la siguiente precedencia de operadores, teniendo como priorid
 
 |  Tipo de operador |  Operadores individuales | 
 |-------------------|--------------------------|
-| miembro	| . []  |
+| miembro	        |           . []           |
 | llamar / crear instancia | () new |
 | negación / incremento | ! ~ - + ++ -- typeof void delete |
 | multiplicar / dividir | * / % |
@@ -415,8 +415,80 @@ Javascript respeta la siguiente precedencia de operadores, teniendo como priorid
 | asignación | = += -= *= /= %= <<= >>= >>>= &= ^= \|= &&= \|\|= ??= |
 | coma | , |
 
+#### Evaluación de cortocircuito
+
+Debido a que las expresiones lógicas se evalúan de izquierda a derecha, se prueban para una posible evaluación de "cortocircuito" utilizando las siguientes reglas:
+
+- false && expresion se evalúa en cortocircuito como false.
+- true || expresion se evalúa en cortocircuito como true.
+
+Este comportamiento puede dar como resultado lógicas como la siguiente:
+
+```javascript
+let edad = 20;
+
+function puedeVotar() {
+    console.log();
+}
+
+edad >= 18 && puedeVotar()
+```
+El ejemplo anterior ejecuta la funcion puedeVotar solo si la variable edad es mayor a 18. Si es 20, ejecuta la función, pero en cambio, si es por ejemplo 16, la evaluación de cortocircuito corta  al devolver falso y no ejecuta jamas la funcion puedeVotar.
+
 ## Tipos de Datos
-Lucas
+
+Javascript es un lenguaje de tipado dinámico y debilmente tipado. Esto significa, en la declaración de sus variables no se necesita proveer el tipo de la creación, y luego puede cambiar el tipo de acuerdo al contenido de las variables, pudiendo reasignar a una variable de un tipo un valor de otro tipo, cambiando así el tipo de la misma.
+
+```javascript
+
+let variable = 42;    // variable ahora es un número
+variable     = 'bar'; // variable ahora es un string
+variable     = true;  // variable ahora es un booleano
+
+```
+
+El último estandar de ECMAScript define nueve tipos de datos, los cual enumeraremos a continuación:
+
+Seis tipos de datos primitivos, controlados por el operador typeof
+- **Undefined**: typeof instance === "undefined"
+- **Boolean**: typeof instance === "boolean"
+- **Number**: typeof instance === "number"
+- **String**: typeof instance === "string"
+- **BigInt**: typeof instance === "bigint"
+- **Symbol**: typeof instance === "symbol"
+
+El tipo de dato Null. Tipo primitivo especial que tiene un uso adicional para su valor: si el objeto no se hereda, se muestra null.
+
+El tipo de dato Object: Tipo estructural especial que no es de datos pero para cualquier instancia de objeto construido que también se utiliza como estructuras de datos: new Object, new Array, new Map, new Set, new WeakMap, new WeakSet, new Date y casi todo lo hecho con la palabra clave new.
+
+El tipo de dato Function: una estructura sin datos, aunque también responde al operador typeof: typeof instance === "function". Esta simplemente es una forma abreviada para funciones, aunque cada constructor de funciones se deriva del constructor Object.
+
+#### Valores primitivos
+
+Ahora vamos a dar una explicación un poco más extensa del comportamiento de los distintos tipos de datos primitivos:
+
+**Boolean**: Representa una valor lógico y puede tener dos valores: true y false.
+
+**Null**: Tiene exactamente un valor: null
+
+**Undefined**: Una variable a la que no se le ha asignado un valor tiene el valor undefined
+
+**Number**: ECMAScript define dos tipos numéricos integrados dentro de este tipo: Number y BigInt.
+
+El tipo Number es un valor en formato binario de 64 bits de doble precisión IEEE 754 (números entre -(253 - 1) y 253 - 1). Además de representar números de punto flotante, el tipo Number tiene tres valores simbólicos: +Infinity, -Infinity y NaN ("Not a Number" o su traducción, no es un número).
+
+En este tipo, el valor 0 tiene dos representaciones: +0 y -0. Cuando uno asigna 0 a una variable sin signo, 0 se reconoce como un alias de +0.
+
+El tipo BigInt es un primitivo numérico en JavaScript que puede representar números enteros con precisión arbitraria. Con BigInts, puedes almacenar y operar de forma segura en números enteros grandes incluso más allá del límite seguro de enteros para Numbers.
+
+Un BigInt se crea agregando n al final de un número entero o llamando al constructor.
+
+**String**: El tipo String de JavaScript se utiliza para representar datos textuales. Es un conjunto de "elementos" de valores enteros sin signo de 16 bits. Cada elemento del String ocupa una posición en la cadena. El primer elemento está en el índice 0, el siguiente en el índice 1, y así sucesivamente. La longitud de una cadena es el número de elementos que contiene.
+
+A diferencia de algunos lenguajes de programación, las cadenas de JavaScript son inmutables. Esto significa que una vez que se crea una cadena, no es posible modificarla.
+
+**Symbol**: Un símbolo es un valor primitivo único e inmutable y se puede utilizar como clave de una propiedad de objeto.
+
 ## Estructuras de control
 Luciano
 ## Polimorfismo
@@ -522,13 +594,13 @@ throw {toString: function() { return "¡Soy un objeto!"; } };
 
 Sin embargo, javascript te provee un par de clases de excepciones base para poder extender la funcionalidad o basarte en ellas cuando ocurre algún error de su tipo. Estos errores, según la documentación de developer.mozilla.org, son los siguientes: 
 
-    **EvalError**: Crea una instancia que representa un error que ocurre con respecto a la función global eval().
-    **InternalError**: Crea una instancia que representa un error que ocurre cuando se produce un error interno en el motor de JavaScript. Por ejemplo: "demasiada recursividad".
-    **RangeError**: Crea una instancia que representa un error que ocurre cuando una variable numérica o parámetro está fuera de su rango válido.
-    **ReferenceError**: Crea una instancia que representa un error que ocurre cuando se quita la referencia a una referencia no válida.
-    **SyntaxError**: Crea una instancia que representa un error de sintaxis.
-    **TypeError**: Crea una instancia que representa un error que ocurre cuando una variable o parámetro no es de un tipo válido.
-    **URIError**: Crea una instancia que representa un error que ocurre cuando encodeURI() o decodeURI() pasan parámetros no válidos.
+    EvalError: Crea una instancia que representa un error que ocurre con respecto a la función global eval().
+    InternalError: Crea una instancia que representa un error que ocurre cuando se produce un error interno en el motor de JavaScript. Por ejemplo: "demasiada recursividad".
+    RangeError: Crea una instancia que representa un error que ocurre cuando una variable numérica o parámetro está fuera de su rango válido.
+    ReferenceError: Crea una instancia que representa un error que ocurre cuando se quita la referencia a una referencia no válida.
+    SyntaxError: Crea una instancia que representa un error de sintaxis.
+    TypeError: Crea una instancia que representa un error que ocurre cuando una variable o parámetro no es de un tipo válido.
+    URIError: Crea una instancia que representa un error que ocurre cuando encodeURI() o decodeURI() pasan parámetros no válidos.
 
 Todos estos errores extienden de una clase base Error, que es la más general y que se recomienda extender si las excepciones necesitadas para una aplicación no corresponden a algunas de las predefinidas (como pasa con la mayoria de excepciones provenientes de errores de negocio de dominios específicos).
 
