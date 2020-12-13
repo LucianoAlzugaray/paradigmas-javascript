@@ -13,7 +13,16 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import recommonmark
+from recommonmark.transform import AutoStructify
+from recommonmark.parser import CommonMarkParser
 
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+            'url_resolver': lambda url: github_doc_root + url,
+            'auto_toc_tree_section': 'Indice',
+            }, True)
+    app.add_transform(AutoStructify)
 
 # -- Project information -----------------------------------------------------
 
@@ -55,12 +64,7 @@ exclude_patterns = []
 #
 html_theme = 'sphinx_rtd_theme'
 
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.txt': 'markdown',
-    '.md': 'markdown',
-}
-
+source_suffix = ['.rst', '.md']
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".

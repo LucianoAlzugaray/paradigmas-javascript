@@ -589,10 +589,6 @@ A diferencia de algunos lenguajes de programación, las cadenas de JavaScript so
 
 **Symbol**: Un símbolo es un valor primitivo único e inmutable y se puede utilizar como clave de una propiedad de objeto.
 
-## Estructuras de control
-Luciano
-## Polimorfismo
-
 ## Pasaje de Parámetros
 Otro de los problemas del scope en JavaScript es que todas las variables de los padres estáticos son visibles en sus hijos. 
 

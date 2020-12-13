@@ -3,18 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Analisis JavScript's documentation!
+JavaScript análisis del diseño del lenguaje.
 ==============================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
+   :caption: Indice:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   javascript/introduccion.md
+   javascript/paradigma.md
+   javascript/tipado.md
+   javascript/expresiones.md
+   javascript/tipos.md
+   javascript/parametros.md
+   javascript/excepciones.md
+   javascript/concurrencia.md
+   javascript/referencias.md
