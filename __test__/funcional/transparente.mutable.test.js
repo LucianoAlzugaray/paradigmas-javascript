@@ -1,6 +1,10 @@
 /*
 * Definición de reducer con transparencia referencial
-* */
+*
+* Ref: MONTERO, Lupo. "Introducción a programación funcional en JavaScript". Medium. Jul. 2018
+* @href: https://medium.com/laboratoria-developers/introducci%C3%B3n-a-la-programaci%C3%B3n-funcional-en-javascript-parte-2-funciones-puras-b99e08c2895d
+*
+* * */
 const reducer = (state = { count: 0 }, action) => {
     switch (action.type) {
         case 'INCREMENT':

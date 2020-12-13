@@ -38,7 +38,10 @@ De hecho los frameworks más populares para la construcción de aplicaciones fro
 En los próximos apartados analizaremos cada uno de estos paradigmas en JavaScript, poniendo énfasis en ejemplificar su implementación por un lado y mencionar los aspectos que lo alejan de las implementaciones puras por otro.
 
 ### Paradigma Funcional
-Un ejemplo simple. Construcción de la función intersección procedural y funcionalmente.
+Para analizar la escritura de programas funcionales en JavaScript nos apoyaremos en *Lupo Montero* y su serie [Introducción a la Programación Funcional en JavaScript]('https://medium.com/laboratoria-developers/introducci%C3%B3n-a-la-programaci%C3%B3n-funcional-en-javascript-parte-2-funciones-puras-b99e08c2895d'). 
+En el directorio `__test__/funcional` se proporcionan varios casos de prueba propuestos por el autor (mas unos pocos propios) que acompañan los siguientes párrafos.
+
+Un ejemplo simple de sintaxis procedural vs. funcional en Javascript. Construcción de la función intersección procedural y funcionalmente.
 
 **Procedural**
 ```javascript
@@ -61,30 +64,127 @@ function interseccionProcedural(a, b) {
 ```javascript
 const interseccionFuncional = (a, b) => a.filter(value => b.indexOf(value) > -1);
 ``` 
-
-Entre las características sobresalientes de los lenguajes funcionales puros podemos mencionar las siguientes:
-* Semántica de valores
-* Transparencia referencial
-* Funciones como valores de primera clase
-* Currying
-* Evaluación perezosa
-
-Analicemos punto por punto:
+En los siguientes apartados se analizan las características principales del paradigma funcional y su implementación en JavaScript.  
 
 #### Semántica de valores
-Como veremos en apartados posteriores, JavaScript no solo soporta asignación de variables sino que además delega en el programador el cuidado de efectos colaterales derivados de la cuestión del *scope* como se verá mas adelante.
+Como veremos en apartados posteriores, JavaScript no solo soporta asignación de variables sino que además delega en el programador el cuidado de efectos colaterales derivados de la cuestión del *scope*.
 En este sentido se aparta notablemente de lenguajes funcionales puros. 
 
 Sin embargo también es cierto que desde hace varios años tanto desde quienes mantienen el lenguaje en sí como desde la comunidad, vienen creciendo herramientas, prácticas y patrones para favorecer la inmutabilidad. Como referencia podemos mencionar al popular patrón Redux y a la incorporación de la sintaxis de des estructuración de objetos, que resulta central para lograr inmutabilidad y semántica de valores en la composición de funciones. 
 
 #### Transparencia Referencial
 
+Garantizar transparencia referencial en JavaScript es responsabilidad del programador. En definitiva se trata de evitar el uso de nombres declarados fuera del ámbito de la función, para garantizar la ausencia de efectos colaterales. 
+
+En la medida en que el lenguaje soporta asignación, el uso de variables declaradas fuera del ámbito de la función, en tanto referencias a locaciones de memoria, rompe la transparencia referencial, ya que la imagen de la función deja de estar completamente determinada por los parámetros de la invocación.
+
+El efecto resultante es que el valor al que se ligará la función deja de ser predecible y por lo tanto testeable. El ejemplo típico es el de una función cuyo valor de retorno varía en función del historial de invocaciones, o con dependencia de la invocación previa de otra función.
+
+Respecto del tema de la Transparencia Referencial Montero propone el recorrido de un reducer sin transparencia referencial ni inmutabilidad del estado hacia uno transparente y con estado inmutable.
+
+Así, como se puede apreciar ejecutando el test `no-transparente.mutable.test.js`, la definición inicial de la función reducer, no garantiza transparencia referencial en tanto su imagen depende del valor de `state`.
+
+```javascript
+const state = { count: 0 };
+
+const reducer = (action) => {
+    switch (action.type) {
+        case 'INCREMENT':
+            state.count++;
+            break;
+        case 'DECREMENT':
+            state.count--;
+            break;
+    }
+    return state;
+};
+```
+
+Así el test `should depend on prevous invocations (history) - unpredictable!` falla o pasa dependiendo de si fue o no ejecutado el test previo.
+
+Para resolver el problema de la dependencia del historial de invocaciones, se introduce  `state` como párametro de invocación. 
+
+```javascript
+const reducer = (state = { count: 0 }, action) => {
+    switch (action.type) {
+        case 'INCREMENT':
+            state.count++;
+            break;
+        case 'DECREMENT':
+            state.count--;
+            break;
+    }
+    return state;
+};
+```
+Esta segunda versión del reducer garantiza que la imagen de la función está completamente determinada por los parámetros de invocación, sin embargo modifica la variable `state` rompiendo la inmutabilidad. 
+
+El ejemplo que elige Lupo Montero es la implementación típica del patrón `Redux` para aplicaciones frontend JavaScript.
+
 #### Composición de funciones
-Una función de orden superior no es más que cualquier función que cumpla por lo menos una de las siguientes condiciones:
-* Recibe una función como argumento
-* Retorna una función
-     
-#### Currying
+
+##### Funciones de órden superior
+
+> "Las funciones que tienen parámetros que son funciones o
+que producen un resultado que es una función se llaman
+funciones de orden superior" - *LPyL, apunte de cátedra 2018 Prof: Lic. Romina Stickar*
+
+En JavaScript es típico recibir y/o retornar funciones. El caso de las promesas resulta un ejemplo apropiado. La definición de una promesa tiene la siguiente estructura:
+
+```javascript
+// Definicion de la promesa
+new Promise(
+    resolve => resolve('Success')
+).then(
+    message => `Message is: ${message}`
+);
+```
+
+Una promesa naturalmente puede recibir una segunda función como argumento para resolver el caso de error.
+```javascript
+// Definicion de la promesa
+const _promise = new Promise(
+    (resolve, reject) => 
+            flag ? resolve('Success') : reject('Error') 
+);
+
+_promise(true)
+    .then(message => `Message is: ${message}`)
+    .catch(message => `Error message is: ${message}`);
+```
+
+Como vemos, el lenguaje brinda una sintaxis muy práctica para la definición de funciones de órden superior. 
+
+Un ejemplo un poco mas avanzado con promesas y aplicación parcial:
+
+```javascript
+test('promesas', () => {
+    const _promise = canResolve => new Promise(
+        resolve => reject => canResolve ?
+            resolve({code: 200, message: 'OK'}) :
+            reject({code: 400, message: 'Bad Request'})
+    );
+
+    _promise(true)
+        .then(
+            args => code => message => 
+                expect(code, message).toEqual({code: 200, message: 'OK'})
+        ).catch(
+            args => code => message => 
+                expect(code, message).toEqual({code: 400, message: 'Bad Request'})
+        );
+});
+```
+
+La sintaxis de funciones en JavaScript nos provee herramientas para facilitar el uso de la *aplicación parcial*
+
+##### Aplicación parcial
+
+La *aplicación parcial* es un mecanismo refactorización de una función de *n* argumentos en *n* funciones de un argumento. El uso de la aplicación parcial permite extender funcionalidad fijando uno o algunos de los argumentos de la función original.
+
+
+
+##### Currying
 Para concluir, no podemos dejar de mencionar currying, que consiste en reemplazar una función que toma varios argumentos con una secuencia de funciones, cada una con un solo argumento. Podríamos decir que el currying es un caso de aplicación parcial en el que siempre rompemos todos los argumentos en una cadena de invocaciones, uno por uno, mientras que en la aplicación parcial normalmente solo fijamos el primer argumento, o un número fijo. Se trata de mecanismos similares pero sutilmente distintos.
 
 
@@ -250,9 +350,245 @@ console.log(i);
 ```
 
 ## Expresiones
-Luciano
+Javascrit posee varios tipos de operadores, entre ellos tenemos operadores unarios, binarios y un único operador terciario.
+
+#### Operadores de asignación
+
+Los operadores de asignación asigna un valor a su operando izquierdo basandose en el valor del operando derecho. Las operaciones pueden ser las siguientes:
+
+**Asignación básica**: Asigna el valor computado del operador derecho al operador izquierdo. Esta operación tiene un valor de retorno que es el del valor derecho computado. En el siguiente ejemplo vemos el comportamiento de esta operación:
+
+```javascript
+// asigna a la variable foo la suma de dos más tres.
+const foo = 2 + 3;
+
+// Asigna a z el valor de la derecha del operador de asignación, en este caso, a z se le asigna 5 + 4.
+const z = (x = 5 + 4)
+```
+
+**Asignación con operandos numéricos**:Luego, Para operandos numéricos, está la siguiente lista de operaciones: 
+
+- *Asignación de adición* (a += b)
+- *Asignación de resta* (a -= b)
+- *Asignación de multiplicación* (a *= b) 
+- *Asignación de división* (a /= b)
+- *Asignación de residuo* (a %= b)
+- *Asignación de exponenciación* (a **= b)
+- *Asignación de desplazamiento a la izquierda* (a <<= b)
+- *Asignación de desplazamiento a la derecha* (a >>= b)
+- *Asignación de desplazamiento a la derecha sin signo* (a >>>= b)
+- *Asignación AND bit a bit* (a &= b)
+- *Asignación XOR bit a bit* (a ^= b)
+- *Asignación OR bit a bit* (a |= b)
+
+**Asignación con operandos lógicos**: Para operandos lógicos, las operaciones de asignación disponibles son: 
+
+- *Asignación AND lógico* (a &&= b)
+- *Asignación OR lógico* (a ||= b)
+- *Asignación de anulación lógica* (x ??= b)
+
+**Desestructuración**: Para asignaciones de mayor complejidad, se puede utilizar la asignación desestructuración, la cual tiene como objetivo extraer datos de arreglos u objetos usando una sintaxis más parecida a la construcción de los mismos.
+
+```javascript
+const arreglo = ['uno', 'dos', 'tres'];
+
+// sin desestructurar
+var uno   = arreglo[0];
+var dos   = arreglo[1];
+var tres = arreglo[2];
+
+// con desestructuración
+var [uno, dos, tres] = arreglo;
+
+const objeto = {nombre: 'Juan', apellido:'Gomez'};
+
+//sin desestructurar
+const nombre = objeto.nombre;
+const apellido = objeto.apellido;
+
+// Con desetructuración. nombre y apellido ahora son constantes con los valores Juan y Gomez.
+const {nombre, apellido} = objeto;
+```
+#### Operadores de comparación
+
+Javascript te provee de la siguiente lista de operadores de comparación. 
+
+- *Igualdad* (==):	Devuelve true si los operandos son iguales.
+- *Desigualdad* (!=): Devuelve true si los operandos no son iguales.
+- *Igualdad estricta* (===): Devuelve true si los operandos son iguales y del mismo tipo. 
+- *Desigualdad estricta* (!==):	Devuelve true si los operandos son del mismo tipo pero no iguales, o son de diferente tipo.	
+- *Mayor que* (>)	Devuelve true si el operando izquierdo es mayor que el operando derecho.	
+- *Mayor o igual que* (>=)	Devuelve true si el operando izquierdo es mayor o igual que el operando derecho.
+- *Menor que* (<): Devuelve true si el operando izquierdo es menor que el operando derecho.	
+- *Menor o igual* (<=)	Devuelve true si el operando izquierdo es menor o igual que el operando derecho.
+
+#### Operadores lógicos
+Para los operadores lógicos, necesitamos conocer como javascript toma los valores verdaderos o falsos. Dentro de este lenguaje se maneja el concepto de truthy values o falsy values, ya que los operadores se manejan con este concepto.
+
+Javascript puede realizar conversiones de valores de sus variables a un valor booleano, según si tienen los siguientes valores:
+
+- undefined
+- NaN
+- null
+- false
+- "" (cadena vacia)
+- 0 (0 es un alias de +0)
+- -0
+- 0n (de tipo BigInt)
+
+Todos los valores anteriores se conocen como falsy values, lo que significa que si es evaluada en una expresión booleana, estos mismos serán tomados como valores falsos.
+
+La siuguiente es una lista de los operadores lógicos disponibles en javascript: 
+
+- *AND Lógico* (&&): Operador binario que devuelve el primer operando si se puede convertir a false; de lo contrario, devuelve el segundo. Por lo tanto, cuando se usa con valores booleanos, && devuelve true si ambos operandos son true; de lo contrario, devuelve false.
+
+- *OR lógico* (||): Operador binario que  devuelve el primer operando si se puede convertir a true; de lo contrario, devuelve el segundo. Por lo tanto, cuando se usa con valores booleanos, || devuelve true si alguno de los operandos es true; si ambos son falsos, devuelve false.
+
+- *NOT lógico* (!): Operador unario que devuelve false si su único operando se puede convertir a true; de lo contrario, devuelve true.
+
+#### Operadores de cadena
+Javascript soporta las siguientes operaciones de cadena:
+
+- *Concatenación* (+) : Concatena la cadena del primer operando con la segunda.
+
+
+- *Concatenación con asignación* (+=) : Concatena la cadena del primer operando con la segunda y guarda su resultado en el primer operando.
+
+#### Otros operadores
+
+Javascript te provee algunos otros operadores para realizar distintas tareas especificas. Estos son:
+
+*Operador condicional*: Es el único operador terciario de javascript. Su sintaxis es la siguiente
+
+```javascript
+condicion ? valor1 : valor2
+```
+
+Evalua la variable condición como un operador lógico, y devuelve valor1 en el caso que sea verdadero y valor2 en el caso contrario.
+
+*delete*: Operador unario que elimina una propiedad de un objeto. Ejemplos de uso son:
+
+```javascript
+delete objeto.propiedad;
+delete objeto[clave];
+delete arreglo[indice];
+delete property;
+```
+
+*typeof*: El operador typeof devuelve una cadena que indica el tipo de operando no evaluado. En el ejemplo siguientes se puede observar su funcionamiento:
+
+
+```javascript
+var miFuncion = new Function('5 + 2');
+var figura = 'circulo';
+var tamanio = 1;
+var arreglo = ['Apple', 'Mango', 'Orange'];
+var hoy = new Date();
+
+typeof miFuncion;       // devuelve "function"
+typeof figura;          // devuelve "string"
+typeof tamanio;         // devuelve "number"
+typeof arreglo;         // devuelve "object"
+typeof hoy;             // devuelve "object"
+typeof noEstaDeclarado; // devuelve "undefined"
+```
+
+#### Precedencia de operadores
+Javascript respeta la siguiente precedencia de operadores, teniendo como prioridad los operadores en el orden de esta lsita de arriba a abajo. 
+
+|  Tipo de operador |  Operadores individuales | 
+|-------------------|--------------------------|
+| miembro	        |           . []           |
+| llamar / crear instancia | () new |
+| negación / incremento | ! ~ - + ++ -- typeof void delete |
+| multiplicar / dividir | * / % |
+| adición / sustracción | + - |
+| desplazamiento bit a bit | << >> >>> |
+| relacional | < <= > >= in instanceof |
+| igualdad | == != === !== |
+| AND bit a bit | & |
+| XOR bit a bit | ^ |
+| OR bit a bit | | |
+| AND lógico | && |
+| OR lógico | \|\| |
+| condicional	| ?: |
+| asignación | = += -= *= /= %= <<= >>= >>>= &= ^= \|= &&= \|\|= ??= |
+| coma | , |
+
+#### Evaluación de cortocircuito
+
+Debido a que las expresiones lógicas se evalúan de izquierda a derecha, se prueban para una posible evaluación de "cortocircuito" utilizando las siguientes reglas:
+
+- false && expresion se evalúa en cortocircuito como false.
+- true || expresion se evalúa en cortocircuito como true.
+
+Este comportamiento puede dar como resultado lógicas como la siguiente:
+
+```javascript
+let edad = 20;
+
+function puedeVotar() {
+    console.log();
+}
+
+edad >= 18 && puedeVotar()
+```
+El ejemplo anterior ejecuta la funcion puedeVotar solo si la variable edad es mayor a 18. Si es 20, ejecuta la función, pero en cambio, si es por ejemplo 16, la evaluación de cortocircuito corta  al devolver falso y no ejecuta jamas la funcion puedeVotar.
+
 ## Tipos de Datos
-Lucas
+
+Javascript es un lenguaje de tipado dinámico y debilmente tipado. Esto significa, en la declaración de sus variables no se necesita proveer el tipo de la creación, y luego puede cambiar el tipo de acuerdo al contenido de las variables, pudiendo reasignar a una variable de un tipo un valor de otro tipo, cambiando así el tipo de la misma.
+
+```javascript
+
+let variable = 42;    // variable ahora es un número
+variable     = 'bar'; // variable ahora es un string
+variable     = true;  // variable ahora es un booleano
+
+```
+
+El último estandar de ECMAScript define nueve tipos de datos, los cual enumeraremos a continuación:
+
+Seis tipos de datos primitivos, controlados por el operador typeof
+- **Undefined**: typeof instance === "undefined"
+- **Boolean**: typeof instance === "boolean"
+- **Number**: typeof instance === "number"
+- **String**: typeof instance === "string"
+- **BigInt**: typeof instance === "bigint"
+- **Symbol**: typeof instance === "symbol"
+
+El tipo de dato Null. Tipo primitivo especial que tiene un uso adicional para su valor: si el objeto no se hereda, se muestra null.
+
+El tipo de dato Object: Tipo estructural especial que no es de datos pero para cualquier instancia de objeto construido que también se utiliza como estructuras de datos: new Object, new Array, new Map, new Set, new WeakMap, new WeakSet, new Date y casi todo lo hecho con la palabra clave new.
+
+El tipo de dato Function: una estructura sin datos, aunque también responde al operador typeof: typeof instance === "function". Esta simplemente es una forma abreviada para funciones, aunque cada constructor de funciones se deriva del constructor Object.
+
+#### Valores primitivos
+
+Ahora vamos a dar una explicación un poco más extensa del comportamiento de los distintos tipos de datos primitivos:
+
+**Boolean**: Representa una valor lógico y puede tener dos valores: true y false.
+
+**Null**: Tiene exactamente un valor: null
+
+**Undefined**: Una variable a la que no se le ha asignado un valor tiene el valor undefined
+
+**Number**: ECMAScript define dos tipos numéricos integrados dentro de este tipo: Number y BigInt.
+
+El tipo Number es un valor en formato binario de 64 bits de doble precisión IEEE 754 (números entre -(253 - 1) y 253 - 1). Además de representar números de punto flotante, el tipo Number tiene tres valores simbólicos: +Infinity, -Infinity y NaN ("Not a Number" o su traducción, no es un número).
+
+En este tipo, el valor 0 tiene dos representaciones: +0 y -0. Cuando uno asigna 0 a una variable sin signo, 0 se reconoce como un alias de +0.
+
+El tipo BigInt es un primitivo numérico en JavaScript que puede representar números enteros con precisión arbitraria. Con BigInts, puedes almacenar y operar de forma segura en números enteros grandes incluso más allá del límite seguro de enteros para Numbers.
+
+Un BigInt se crea agregando n al final de un número entero o llamando al constructor.
+
+**String**: El tipo String de JavaScript se utiliza para representar datos textuales. Es un conjunto de "elementos" de valores enteros sin signo de 16 bits. Cada elemento del String ocupa una posición en la cadena. El primer elemento está en el índice 0, el siguiente en el índice 1, y así sucesivamente. La longitud de una cadena es el número de elementos que contiene.
+
+A diferencia de algunos lenguajes de programación, las cadenas de JavaScript son inmutables. Esto significa que una vez que se crea una cadena, no es posible modificarla.
+
+**Symbol**: Un símbolo es un valor primitivo único e inmutable y se puede utilizar como clave de una propiedad de objeto.
+
 ## Estructuras de control
 Luciano
 ## Polimorfismo
@@ -358,13 +694,13 @@ throw {toString: function() { return "¡Soy un objeto!"; } };
 
 Sin embargo, javascript te provee un par de clases de excepciones base para poder extender la funcionalidad o basarte en ellas cuando ocurre algún error de su tipo. Estos errores, según la documentación de developer.mozilla.org, son los siguientes: 
 
-    **EvalError**: Crea una instancia que representa un error que ocurre con respecto a la función global eval().
-    **InternalError**: Crea una instancia que representa un error que ocurre cuando se produce un error interno en el motor de JavaScript. Por ejemplo: "demasiada recursividad".
-    **RangeError**: Crea una instancia que representa un error que ocurre cuando una variable numérica o parámetro está fuera de su rango válido.
-    **ReferenceError**: Crea una instancia que representa un error que ocurre cuando se quita la referencia a una referencia no válida.
-    **SyntaxError**: Crea una instancia que representa un error de sintaxis.
-    **TypeError**: Crea una instancia que representa un error que ocurre cuando una variable o parámetro no es de un tipo válido.
-    **URIError**: Crea una instancia que representa un error que ocurre cuando encodeURI() o decodeURI() pasan parámetros no válidos.
+    EvalError: Crea una instancia que representa un error que ocurre con respecto a la función global eval().
+    InternalError: Crea una instancia que representa un error que ocurre cuando se produce un error interno en el motor de JavaScript. Por ejemplo: "demasiada recursividad".
+    RangeError: Crea una instancia que representa un error que ocurre cuando una variable numérica o parámetro está fuera de su rango válido.
+    ReferenceError: Crea una instancia que representa un error que ocurre cuando se quita la referencia a una referencia no válida.
+    SyntaxError: Crea una instancia que representa un error de sintaxis.
+    TypeError: Crea una instancia que representa un error que ocurre cuando una variable o parámetro no es de un tipo válido.
+    URIError: Crea una instancia que representa un error que ocurre cuando encodeURI() o decodeURI() pasan parámetros no válidos.
 
 Todos estos errores extienden de una clase base Error, que es la más general y que se recomienda extender si las excepciones necesitadas para una aplicación no corresponden a algunas de las predefinidas (como pasa con la mayoria de excepciones provenientes de errores de negocio de dominios específicos).
 
