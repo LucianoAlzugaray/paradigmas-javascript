@@ -25,42 +25,59 @@ test('debe retornar la intersección', () => {
     expect(interseccionFuncional([4, 5, 6], [4, 5])).toEqual([4, 5]);
 });
 
+describe('asd', () => {
+    // Una función que retorna una función (usando bloques y retorno).
+    const _fn = () => {
+        return () => {
+            return true;
+        };
+    };
+    // La misma función usando retornos implícitos
+    const fn = () => () => true;
 
-/**
- * Tipos de funciones. Tipos de retorno
- * ------------------------------------
- */
 
-//
-// Con el keyword `function`
-//
-// Declarando una función clásica "con nombre"
-function double1(a) {
-    return a * 2;
-}
-// Usando una expresión de función "con nombre"
-const fn = function double2(a) {
-    return a * 2;
-};
-// Usando una expresión de función "anónima"
-const double3 = function (a) {
-    return a * 2;
-};
-//
-// Con funciones flecha (arrow functions)
-//
-// Con retorno explícito
-const double4 = (a) => {
-    return a * 2;
-};
-// Con retorno implícito y sin paréntesis opcionales en argumentos
-// (ya que solo hay uno)
-const double5 = a => a * 2;
+    it('should be a function that returns a function', () => {
+        expect(typeof fn).toBe('function');
+        expect(typeof fn()).toBe('function');
+    });
+    it('should return a function that returns true', () => {
+        expect(fn()()).toBe(true);
+    });
+});
 
-test('Declaración de funciones', () => {
-   expect(double1(2)).toBe(4);
-   expect(fn(2)).toBe(4);
-   expect(double3(2)).toBe(4);
-   expect(double4(2)).toBe(4);
-   expect(double5(2)).toBe(4);
+test('asd2', () => {
+    const sum3 = (x, y, z) => x + y + z;
+    const sum3Curried = x => y => z => x + y + z;
+
+    expect(sum3(1, 2, 3)).toEqual(sum3Curried(1)(2)(3));
+});
+
+test('promesas', () => {
+    const _promise = canResolve => new Promise(
+resolve => reject => canResolve ?
+                resolve({code: 200, message: 'OK'}) :
+                reject({code: 400, message: 'Bad Request'})
+    );
+
+    _promise(true)
+       .then((args) => code => message => expect(code, message).toEqual({code: 200, message: 'OK'}))
+       .catch((args) => code => message => expect(code, message).toEqual({code: 400, message: 'Bad Request'}));
+
+    _promise(false)
+       .then((args) => code => message => expect(code, message).toEqual({code: 200, message: 'OK'}))
+       .catch((args) => code => message => expect(code, message).toEqual({code: 400, message: 'Bad Request'}));
+});
+
+test('Aplicación parcial', () => {
+
+    const login = (user, email) => [...{
+            user: user,
+            email: email,
+            password:password
+    }];
+
+    
+
+
+
 });
