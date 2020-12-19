@@ -590,7 +590,125 @@ A diferencia de algunos lenguajes de programación, las cadenas de JavaScript so
 **Symbol**: Un símbolo es un valor primitivo único e inmutable y se puede utilizar como clave de una propiedad de objeto.
 
 ## Estructuras de control
-Luciano
+Javascript utiliza algunas estructuras para mantener el flujo de control de su aplicación. A continuación ampliaremos cuales son y como es su aplicación
+
+#### Bloque
+El bloque se utiliza  para agrupar 0 o más sentencias. Se define por llaves como sigue:
+
+```javascript 
+{
+    sentencia1;
+    sentencia2;
+    ....
+    sentenciaN;
+}
+```
+Este se utiliza para indicar a las otras siguientes sentencias que veremos donde inicia, ya que lo que toman las sentencias de control es la siguiente sentencia inmediata, y al ser un bloque, se ejecuta completo.
+
+#### Instrucciones de interrupción de ejecución
+
+Javascript tiene tres sentencias para interrumpir la ejecución de un bloque. Las instrucciones son las siguientes:
+
+- **break**: Finaliza la sentencia actual loop, switch, o label y transfiere el control del programa a la siguiente sentencia de la sentencia finalizada
+- **continue**: Finaliza la ejecucion de las sentencias dentro de la iteracion actual del actual bucle,  y continua la ejecucion del bucle con la siguiente iteracion
+- **throw**: Lanza una excepción definida por el usuario.
+
+#### Sentencia de control condicional
+Ejecuta una sentencia si una condición específicada es evaluada como verdadera. Puede opcionalmente agregarse una sentencia else que será ejecutada si la condición es evaluada como falsa.
+
+```javascript
+if (condición) sentencia1 [else sentencia2]
+```
+Observemos que sentencia puede ser una instrucción o un bloque. Si no se ejecuta, opcionalmente se puede poner una sentencia else, la cual tiene la particularidad que su sentencia puede ser otro if, lo cual genera un posible anidamiento de if.
+
+```javascript
+if (condición1)
+   sentencia1
+else if (condición2)
+   sentencia2
+else if (condición3)
+   sentencia3
+...
+else
+   sentenciaN
+```
+
+La condición no necesariamente tiene que ser un valor proveniente del objeto Boolean sino que puede ser cualquier objeto, y su lectura en la sentencia se hará de acuerdo a lo denotado en la sección operadores lógicos de este trabajo.
+
+#### Sentencia de condición múltiple
+Javascript cuenta con una sentencia de condición múltiple llamada switch, que consta de varias valores posibles de la expresión, y una sentencia (o bloque) por valor. Cuando una el valor de la expresión coincide con un valor, ejecuta el bloque relacionado, y sigue ejecutando las siguientes sentencias de otros valores. Para evitar que ejecute código de otros valores, se recomienda poner una sentencia break que cortará el bloque de ejecución dentro del switch, para seguir con la ejecución de la sentencia inmediatamente siguiente al bloque switch.     
+
+```javascript
+switch (expresión) {
+  case valor1:
+    //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor1
+    [break;]
+  case valor2:
+    //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor2
+    [break;]
+  ...
+  case valorN:
+    //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
+    [break;]
+  default:
+    //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
+    [break;]
+```
+También puede ser adjuntado un caso default, en le caso que la expresion no sea igual a ninguno de los valores listados como casos.
+
+#### Estructuras de iteración
+
+Javascript nos provee tres estructuras de iteración principales, una de ellas con un par de variantes.
+
+**Estructura de control do...while**:  La sentencia do...while (hacer mientras) crea un bucle que ejecuta una sentencia especificada, hasta que la condición de comprobación se evalúa como falsa. La condición se evalúa después de ejecutar la sentencia, dando como resultado que la sentencia especificada se ejecute al menos una vez.
+
+```javascript
+let result = '';
+let i = 0;
+
+do {
+  i = i + 1;
+  result = result + i;
+} while (i < 5);
+```
+
+**Estructura de control while**:  Crea un bucle que ejecuta una sentencia especificada mientras cierta condición se evalúe como verdadera. Dicha condición es evaluada antes de ejecutar la sentencia.
+
+```javascript
+n = 0;
+x = 0;
+while (n < 3) {
+  n ++;
+  x += n;
+}
+```
+**Estructura de control for**: La estructura for puede tener varias variantes. La primera es el for común, el cual crea un bucle que consiste en tres expresiones opcionales, encerradas en paréntesis y separadas por puntos y comas, seguidas de una sentencia ejecutada en un bucle.
+
+```javascript
+for ([expresion-inicial]; [condicion]; [expresion-final])sentencia
+```
+
+Este bucle es muy parecido a los bucles for de otros lenguajes, tal como C o java. Este bucle provee una iteración clara, con el único defectoo que la sintaxis es un poco dificil para aplicarlo a los iteradores, que se podrian mejorar declarandola de otra forma. Javascript implementa estas formas con dos variantes del bucle: 
+
+- **for...in**: La instrucción for-in itera sobre todas las propiedades enumerables de un objeto que está codificado por cadenas (ignorando los codificados por Símbolos, incluidas las propiedades enumerables heredadas.
+- **for...of**: La sentencia sentencia for...of ejecuta un bloque de código para cada elemento de un objeto iterable, como lo son: String, Array, objetos similares a array (por ejemplo, arguments or NodeList), TypedArray, Map, Set e iterables definidos por el usuario.
+
+```javascript
+///bucle for in
+const object = { a: 1, b: 2, c: 3 };
+
+for (const property in object) {
+  console.log(`${property}: ${object[property]}`);
+}
+
+//bucle for of
+let iterable = [10, 20, 30];
+
+for (let value of iterable) {
+  value += 1;
+  console.log(value);
+}
+```
 ## Polimorfismo
 
 ## Pasaje de Parámetros
@@ -750,10 +868,6 @@ Por último, luego de ejecutarse el bloque try si se logró ejecutar bien, o si 
 
 ## Concurrencia  
 
-Para estudiar sobre la concurrencia de javascript, nos basaremos en el popular motor de ejecución V8, el cual funciona como runtime en los navegadores y tambien como core de su popular entorno de ejecución nodejs, el cual se utiliza para convertir un lenguaje que primeramente fue orientado a web a uno de proposito general. Este entorno, a pesar de que es muy utilizado para desarrollo de servidores web, tiene un sistema muy particular para manejar la concurrencia. 
-
-Hasta la version de nodejs 10 de nodejs, version cuyos cambios introdujeron a los worker threads de forma experimental dentro de la api, un proceso estandar de nodejs funcionaba con un unico hilo de ejecución. O sea que si querias multiplicar el poder computacional de la aplicación, debias multiplicar la cantidad de instancias en las cuales se ejecutaba y balancear la carga del mismo. El motivo por el cual esta tecnología era muy utilizada para servidores, donde los costos son importantes, hay alta concurrencia de peticiones y se prioriza la velocidad de respuesta, es por su particular manera de ejecución no bloqueante con la entrada/salida.
-
 Javascript utiliza detras de escena un mecanismo conocido como "event loop", que traducido a español significaria iteración de eventos, y es como maneja los eventos para la ejecución asincrona de código. Node se trata basicamente de ejecución de funciones asincronas para evitar el bloqueo. Para esto, el ambiente te provee de instrucciones de ejecución para las procesos posiblemente bloqueantes (entiendase proceso bloqueante como busqueda de datos en disco duro, espera de timeouts, espera de respuesta de solicitudes a otros servidores, etc), con un mecanismo de callbacks asíncrono. Para darnos una idea de a que nos referimos, veamos el siguiente ejemplo.
 
 ```javascript
@@ -769,7 +883,7 @@ Esto funciona gracias al mecanismo de event loop de javascript. El runtime de ja
 
 Javascript utiliza los componentes anteriores para ejecutar su código. Un programa está terminado no solo cuando su call stack entero haya sido limpiado, esto es, hasta que la función principal haya sido ejecutada, sino que una aplicación se considera totalmente ejecutada cuando su call stack esté limpio y no tenga más mensajes en la callback queue, ni esté esperando alguna respuesta en la waiting list. Cada vez que se limpia el call stack, el event loop se encarga de observar el callback queue, sacar la siguiente función callback y ponerla en el callstack hasta que la misma sea enteramente ejecutada. Si no hay funciones en el call stack ni tampoco mensajes en el callback queue, el event loop revisa la waiting list si todavia existen operaciones a las cuales se espera su ejecución, si asi lo fuese, se mantiene haciendo pooling hasta que haya habido una respuesta de los eventos asíncronos.
 
-En algunos ambientes, tales como nodejs version 10 en forma experimental a versiones posteriores de la 12 donde ya esta implementación ds la siguiente característica ya es estable, existe una API conocida como worker threads que te permite generar hilos de ejecución. Cuando se realiza la generación de threads utilizando este concepto, cada hilo de ejecución tiene su propio call stack, event loop y callback queue, y funciona exactamente igual. La generación de hilos en este lenguaje se tiene que tomar con mucha precaución, ya que el lenguaje está orientado a manejar un solo hilo de ejecución, y la generación de más hilos puede impactar en la eficiencia del mismo. 
+En algunos ambientes, tales como nodejs, un ambiente de ejecución de javascript para servidores, en su version 10 en forma experimental a versiones posteriores de la 12 donde ya esta implementación ds la siguiente característica ya es estable, existe una API conocida como worker threads que te permite generar hilos de ejecución. Cuando se realiza la generación de threads utilizando este concepto, cada hilo de ejecución tiene su propio call stack, event loop y callback queue, y funciona exactamente igual. La generación de hilos en este lenguaje se tiene que tomar con mucha precaución, ya que el lenguaje está orientado a manejar un solo hilo de ejecución, y la generación de más hilos puede impactar en la eficiencia del mismo. 
 
 ## Referencias
 La siguiente lista son las lecturas utilizadas para el informe.
@@ -788,3 +902,5 @@ La siguiente lista son las lecturas utilizadas para el informe.
 - http://tomcopeland.blogs.com/EcmaScript.html#prod88
 - https://github.com/undefinedschool/notes-oop-js
 - https://developer.mozilla.org/es/docs/Web/JavaScript/Introducci%C3%B3n_a_JavaScript_orientado_a_objetos
+- https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Sentencias
+- https://developer.mozilla.org/es/docs/Web/JavaScript/Data_structures
